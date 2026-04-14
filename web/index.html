@@ -46,13 +46,14 @@
                 <label for="utente-citta">Citta (opzionale)</label>
                 <input type="text" id="utente-citta" placeholder="Es. Isola Yoshi">
                 <label for="utente-sesso">Sesso</label>
-                <select id="utente-sesso">
-                    <option value="M">M</option>
-                    <option value="F">F</option>
+                <select id="utente-sesso" required>
+                    <option value="">-- Seleziona --</option>
+                    <option value="M">Maschio</option>
+                    <option value="F">Femmina</option>
                     <option value="Altro">Altro</option>
                 </select>
                 <label for="utente-cf">Codice Fiscale</label>
-                <input type="text" id="utente-cf" placeholder="Es. RSSMRA80A01H501A" maxlength="16">
+                <input type="text" id="utente-cf" placeholder="Es. RSSMRA80A01H501A" maxlength="16" required>
                 <label for="utente-dataNascita">Data di Nascita (opzionale)</label>
                 <input type="date" id="utente-dataNascita">
                 <label for="utente-telefono">Telefono (opzionale)</label>

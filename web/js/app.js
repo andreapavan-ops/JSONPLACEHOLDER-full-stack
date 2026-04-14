@@ -223,6 +223,23 @@ document.getElementById("form-utente").addEventListener("submit", async (e) => {
     const dataNascita = document.getElementById("utente-dataNascita").value;
     const telefono = document.getElementById("utente-telefono").value.trim();
 
+    // ============================================================
+    // Validazione Codice Fiscale
+    // ============================================================
+    // Il CF italiano ha sempre questa struttura:
+    //   6 lettere (cognome + nome) + 2 cifre (anno) + 1 lettera (mese)
+    //   + 2 cifre (giorno) + 1 lettera + 3 cifre (comune) + 1 lettera (controllo)
+    // La regex verifica SOLO il formato, non la correttezza matematica.
+    // toUpperCase() rende il controllo case-insensitive: "rssmra..." diventa "RSSMRA..."
+    const regexCF = /^[A-Z]{6}[0-9]{2}[A-Z][0-9]{2}[A-Z][0-9]{3}[A-Z]$/;
+    // CF è obbligatorio (required nell'HTML) quindi è sempre valorizzato qui
+    if (!regexCF.test(codiceFiscale.toUpperCase())) {
+        // ui.mostraErrore mostra il messaggio per 4 secondi poi lo rimuove
+        // "return" blocca l'esecuzione: il fetch NON viene inviato
+        ui.mostraErrore("Codice fiscale non valido (formato: RSSMRA80A01H501A)", liste.utenti);
+        return;
+    }
+
     try {
         await api.creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
         e.target.reset();
