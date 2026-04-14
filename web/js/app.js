@@ -256,4 +256,24 @@ document.getElementById("form-commento").addEventListener("submit", async (e) =>
 // Avvio — Carica la lista utenti all'apertura
 // ============================================================
 
+// ============================================================
+// Filtro ricerca utenti
+// ============================================================
+// Ascolta ogni tasto che l'utente digita nel campo ricerca.
+// Non fa fetch all'API — filtra le card già presenti nel DOM.
+
+document.getElementById("ricerca-utenti").addEventListener("input", (e) => {
+    const testo = e.target.value.toLowerCase(); // testo digitato in minuscolo
+
+    // querySelectorAll seleziona TUTTE le card utente nella lista
+    const cards = document.querySelectorAll("#lista-utenti .card");
+
+    cards.forEach(card => {
+        const contenuto = card.textContent.toLowerCase(); // tutto il testo della card
+        // se il testo digitato è contenuto nella card → mostra, altrimenti nascondi
+        card.style.display = contenuto.includes(testo) ? "" : "none";
+    });
+});
+
+
 caricaUtenti();

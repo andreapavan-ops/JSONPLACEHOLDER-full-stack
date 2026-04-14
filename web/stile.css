@@ -266,3 +266,24 @@ form button[type="submit"]:hover {
     padding: 2rem;
     font-size: 0.9375rem;
 }
+
+/* ============================================================
+   Campo ricerca
+   ============================================================ */
+
+#ricerca-utenti {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 2px solid var(--colore-bordo);
+    border-radius: var(--raggio);
+    font-size: 0.9375rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--ombra);
+    transition: border-color 0.15s;
+}
+
+#ricerca-utenti:focus {
+    outline: none;
+    border-color: var(--colore-primario);
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
