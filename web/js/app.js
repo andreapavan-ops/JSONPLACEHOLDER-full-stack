@@ -118,6 +118,18 @@ async function caricaCommenti(postId) {
     }
 }
 
+async function aggiornaStatistiche() {
+    // Promise.all esegue le 3 chiamate IN PARALLELO — più veloce che farle una alla volta
+    const [utenti, post, commenti] = await Promise.all([
+        api.ottieniUtenti(),
+        api.ottieniPost(),
+        api.ottieniCommenti()
+    ]);
+    document.getElementById("statistiche").textContent =
+        `Utenti: ${utenti.length} | Post: ${post.length} | Commenti: ${commenti.length}`;
+}
+
+
 // ============================================================
 // Drill-down
 // ============================================================
@@ -169,6 +181,7 @@ async function eliminaUtente(id) {
     try {
         await api.eliminaUtente(id);
         await caricaUtenti();
+        await aggiornaStatistiche();
     } catch (err) {
         ui.mostraErrore(err.message, liste.utenti);
     }
@@ -179,6 +192,7 @@ async function eliminaPost(id) {
     try {
         await api.eliminaPost(id);
         await caricaPost(utenteSelezionato?.id);
+        await aggiornaStatistiche();
     } catch (err) {
         ui.mostraErrore(err.message, liste.post);
     }
@@ -189,6 +203,7 @@ async function eliminaCommento(id) {
     try {
         await api.eliminaCommento(id);
         await caricaCommenti(postSelezionato?.id);
+        await aggiornaStatistiche();
     } catch (err) {
         ui.mostraErrore(err.message, liste.commenti);
     }
@@ -208,6 +223,7 @@ document.getElementById("form-utente").addEventListener("submit", async (e) => {
         await api.creaUtente({ nome, email, citta });
         e.target.reset();
         await caricaUtenti();
+        await aggiornaStatistiche();
     } catch (err) {
         ui.mostraErrore(err.message, liste.utenti);
     }
@@ -227,6 +243,7 @@ document.getElementById("form-post").addEventListener("submit", async (e) => {
             document.getElementById("post-userId").value = utenteSelezionato.id;
         }
         await caricaPost(utenteSelezionato?.id);
+        await aggiornaStatistiche();
     } catch (err) {
         ui.mostraErrore(err.message, liste.post);
     }
@@ -247,6 +264,7 @@ document.getElementById("form-commento").addEventListener("submit", async (e) =>
             document.getElementById("commento-postId").value = postSelezionato.id;
         }
         await caricaCommenti(postSelezionato?.id);
+        await aggiornaStatistiche();
     } catch (err) {
         ui.mostraErrore(err.message, liste.commenti);
     }
@@ -275,5 +293,5 @@ document.getElementById("ricerca-utenti").addEventListener("input", (e) => {
     });
 });
 
-
+aggiornaStatistiche();
 caricaUtenti();
