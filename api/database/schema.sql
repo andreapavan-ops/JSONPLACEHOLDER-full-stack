@@ -15,6 +15,10 @@ CREATE TABLE IF NOT EXISTS utenti (
     nome    VARCHAR(100)  NOT NULL,
     email   VARCHAR(100)  NOT NULL,
     citta   VARCHAR(100)  NOT NULL DEFAULT '',
+    sesso          ENUM('M', 'F', 'Altro')  NOT NULL,
+    codiceFiscale  CHAR(16)                 NOT NULL,
+    dataNascita    DATE,
+    telefono       VARCHAR(20),
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

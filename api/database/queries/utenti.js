@@ -58,10 +58,10 @@ export async function trovaUtentePerId(id) {
  *
  * SQL: INSERT INTO utenti (nome, email, citta) VALUES (?, ?, ?)
  */
-export async function creaUtente({ nome, email, citta }) {
+export async function creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono }) {
     const [risultato] = await pool.query(
-        "INSERT INTO utenti (nome, email, citta) VALUES (?, ?, ?)",
-        [nome, email, citta || ""]
+    "INSERT INTO utenti (nome, email, citta, sesso, codiceFiscale, dataNascita, telefono) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [nome, email, citta, sesso, codiceFiscale, dataNascita, telefono || ""]
     );
 
     return { id: risultato.insertId, nome, email, citta: citta || "" };
@@ -77,14 +77,14 @@ export async function creaUtente({ nome, email, citta }) {
  *
  * SQL: UPDATE utenti SET nome = ?, email = ?, citta = ? WHERE id = ?
  */
-export async function sostituisciUtente(id, { nome, email, citta }) {
+export async function sostituisciUtente(id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono }) {
     const [risultato] = await pool.query(
-        "UPDATE utenti SET nome = ?, email = ?, citta = ? WHERE id = ?",
-        [nome, email, citta || "", id]
+        "UPDATE utenti SET nome = ?, email = ?, citta = ?, sesso = ?, codiceFiscale = ?, dataNascita = ?, telefono = ? WHERE id = ?",
+        [nome, email, citta, sesso, codiceFiscale, dataNascita, telefono || "", id]
     );
 
     if (risultato.affectedRows === 0) return null;
-    return { id, nome, email, citta: citta || "" };
+    return { id, nome, email, citta, sesso, codiceFiscale, dataNascita, telefono: telefono || "" };
 }
 
 /**
@@ -94,7 +94,7 @@ export async function sostituisciUtente(id, { nome, email, citta }) {
  * SQL dinamico: UPDATE utenti SET <campo> = ?, ... WHERE id = ?
  */
 export async function aggiornaUtente(id, dati) {
-    const campiPermessi = ["nome", "email", "citta"];
+    const campiPermessi = ["nome", "email", "citta", "sesso", "codiceFiscale", "dataNascita", "telefono"];
     const aggiornamenti = [];
     const valori = [];
 

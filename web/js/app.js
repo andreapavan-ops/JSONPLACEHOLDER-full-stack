@@ -218,9 +218,13 @@ document.getElementById("form-utente").addEventListener("submit", async (e) => {
     const nome = document.getElementById("utente-nome").value.trim();
     const email = document.getElementById("utente-email").value.trim();
     const citta = document.getElementById("utente-citta").value.trim();
+    const sesso = document.getElementById("utente-sesso").value;
+    const codiceFiscale = document.getElementById("utente-cf").value.trim();
+    const dataNascita = document.getElementById("utente-dataNascita").value;
+    const telefono = document.getElementById("utente-telefono").value.trim();
 
     try {
-        await api.creaUtente({ nome, email, citta });
+        await api.creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
         e.target.reset();
         await caricaUtenti();
         await aggiornaStatistiche();

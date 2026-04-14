@@ -49,6 +49,8 @@ export function mostraUtenti(utenti, contenitore, callbacks) {
             <h3>${utente.nome}</h3>
             <p>${utente.email}</p>
             <p>${utente.citta || "Nessuna citta"}</p>
+            <p>Sesso: ${utente.sesso || "—"} | CF: ${utente.codiceFiscale || "—"}</p>
+            <p>Nato il: ${utente.dataNascita ? utente.dataNascita.slice(0, 10) : "—"} | Tel: ${utente.telefono || "—"}</p>
             <div class="azioni">
                 <button class="btn-primario" data-azione="vedi-post">Vedi Post</button>
                 <button class="btn-pericolo" data-azione="elimina">Elimina</button>
