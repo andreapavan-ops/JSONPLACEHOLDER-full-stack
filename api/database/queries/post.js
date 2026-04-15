@@ -14,19 +14,46 @@ import pool from "../connessione.js";
  * SQL senza filtro:  SELECT * FROM post
  * SQL con filtro:    SELECT * FROM post WHERE userId = ?
  */
-export async function trovaPost(userId) {
+export async function trovaPost(userId, pagina = 1, limite = 3) {
+    // 1. Calcoli iniziali
+    const pag = parseInt(pagina);
+    const lim = parseInt(limite);
+    const offset = (pag - 1) * lim;
+
+    // 2. Costruiamo la query in base alla presenza di userId
+    let sqlDati = "SELECT * FROM post";
+    let sqlConta = "SELECT COUNT(*) as totale FROM post";
+    let paramsDati = [];
+    let paramsConta = [];
+
     if (userId) {
-        const [righe] = await pool.query(
-            "SELECT * FROM post WHERE userId = ?",
-            [userId]
-        );
-        return righe;
+        sqlDati += " WHERE userId = ?";
+        sqlConta += " WHERE userId = ?";
+        paramsDati.push(userId);
+        paramsConta.push(userId);
     }
 
-    const [righe] = await pool.query("SELECT * FROM post");
-    return righe;
-}
+    // Aggiungiamo paginazione alla query dei dati
+    sqlDati += " LIMIT ? OFFSET ?";
+    paramsDati.push(lim, offset);
 
+    // 3. Eseguiamo le query
+    const [dati] = await pool.query(sqlDati, paramsDati);
+    const [[{ totale }]] = await pool.query(sqlConta, paramsConta);
+    
+    const pagineTotali = Math.ceil(totale / lim);
+
+    // 4. Restituiamo il formato esatto richiesto dall'Esercizio 7
+    return {
+        dati: dati, // L'esercizio vuole "dati"
+        meta: {
+            pagina: pag,
+            limite: lim,
+            totale: totale,
+            pagine: pagineTotali
+        }
+    };
+}
 /**
  * Cerca un singolo post per ID.
  *

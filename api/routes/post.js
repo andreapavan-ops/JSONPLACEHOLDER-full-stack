@@ -13,24 +13,26 @@ import {
 const router = Router();
 
 // ============================================================
-// GET /api/post — Lista tutti i post
+// GET /api/post — Lista post con Paginazione
 // ============================================================
-// Filtro opzionale: /api/post?userId=2
-//
-// Prima (array):    post.filter(p => p.userId === parseInt(userId))
-// Adesso (MySQL):   SELECT * FROM post WHERE userId = ?
-
 router.get("/", async (req, res) => {
     try {
-        const { userId } = req.query;
-        const risultato = await trovaPost(userId ? parseInt(userId) : undefined);
+        // 1. Estraiamo i nuovi parametri dalla query string
+        // Usiamo dei valori di default se l'utente non li specifica
+        const pagina = parseInt(req.query.pagina) || 1;
+        const limite = parseInt(req.query.limite) || 10;
+        const userId = req.query.userId ? parseInt(req.query.userId) : undefined;
+
+        // 2. Passiamo tutto alla funzione del database
+        // Nota: dovremo aggiornare trovaPost nel file delle query!
+        const risultato = await trovaPost(userId, pagina, limite);
+        
         res.json(risultato);
     } catch (errore) {
         console.error("Errore GET /api/post:", errore);
         res.status(500).json({ errore: "Errore interno del server" });
     }
 });
-
 // ============================================================
 // GET /api/post/:id — Singolo post
 // ============================================================

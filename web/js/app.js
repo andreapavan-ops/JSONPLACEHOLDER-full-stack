@@ -12,6 +12,8 @@ import * as ui from "./ui.js";
 let utenteSelezionato = null;   // { id, nome }
 let postSelezionato = null;     // { id, titolo }
 let utenteInModifica = null;   // utente da modificare, null = modalità creazione
+let paginaCorrente = 1;
+const limitePost = 3;
 
 // ============================================================
 // Riferimenti DOM
@@ -97,16 +99,31 @@ ui.mostraUtenti(utenti, liste.utenti, {
     }
 }
 
-async function caricaPost(userId) {
+async function caricaPost(userId, pagina = 1) {
     try {
-        const post = await api.ottieniPost(userId);
-        ui.mostraPost(post, liste.post, {
+        const risultato = await api.ottieniPost(userId, pagina, limitePost);
+        ui.mostraPost(risultato.dati, liste.post, {
             onVediCommenti: vediCommentiDiPost,
             onElimina: eliminaPost,
         });
+        // Mostra paginazione solo nella vista "tutti i post" (senza filtro utente)
+        const panelloPaginazione = document.getElementById("paginazione-post");
+        if (!userId) {
+            aggiornaInterfacciaPaginazione(risultato.meta);
+            panelloPaginazione.style.display = "";
+        } else {
+            panelloPaginazione.style.display = "none";
+        }
+        paginaCorrente = risultato.meta.pagina;
     } catch (err) {
         ui.mostraErrore(err.message, liste.post);
     }
+}
+
+function aggiornaInterfacciaPaginazione(meta) {
+    document.getElementById("info-pagina").textContent = `Pagina ${meta.pagina} di ${meta.pagine}`;
+    document.getElementById("btn-precedente").disabled = meta.pagina <= 1;
+    document.getElementById("btn-successiva").disabled = meta.pagina >= meta.pagine;
 }
 
 async function caricaCommenti(postId) {
@@ -127,8 +144,9 @@ async function aggiornaStatistiche() {
         api.ottieniPost(),
         api.ottieniCommenti()
     ]);
+    // post è ora { dati, meta } — il totale reale è in meta.totale
     document.getElementById("statistiche").textContent =
-        `Utenti: ${utenti.length} | Post: ${post.length} | Commenti: ${commenti.length}`;
+        `Utenti: ${utenti.length} | Post: ${post.meta.totale} | Commenti: ${commenti.length}`;
 }
 
 
@@ -352,6 +370,14 @@ document.getElementById("ricerca-utenti").addEventListener("input", (e) => {
 
 document.getElementById("annulla-modifica").addEventListener("click", () => {
     resetFormUtente();
+});
+
+document.getElementById("btn-precedente").addEventListener("click", () => {
+    if (paginaCorrente > 1) caricaPost(undefined, paginaCorrente - 1);
+});
+
+document.getElementById("btn-successiva").addEventListener("click", () => {
+    caricaPost(undefined, paginaCorrente + 1);
 });
 
 
