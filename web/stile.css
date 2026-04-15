@@ -181,6 +181,21 @@ section h2 {
     background: var(--colore-pericolo-scuro);
 }
 
+.btn-secondario {
+    background: #f59e0b;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondario:hover {
+    background: #d97706;
+}
+
+
+
 /* ============================================================
    Form
    ============================================================ */

@@ -38,7 +38,7 @@
             <h2>Utenti</h2>
 
             <form id="form-utente">
-                <h3>Nuovo Utente</h3>
+            <h3 id="titolo-form-utente">Nuovo Utente</h3>
                 <label for="utente-nome">Nome</label>
                 <input type="text" id="utente-nome" placeholder="Es. Yoshi Verde" required>
                 <label for="utente-email">Email</label>
@@ -58,7 +58,8 @@
                 <input type="date" id="utente-dataNascita">
                 <label for="utente-telefono">Telefono (opzionale)</label>
                 <input type="text" id="utente-telefono" placeholder="Es. +39 333 1234567">
-                <button type="submit">Crea Utente</button>
+                <button type="submit">Salva Utente</button>
+                <button type="button" id="annulla-modifica" class="btn-secondario" style="display:none">Annulla</button>
             </form>
 
             <label for="ricerca-utenti">🔍 Cerca utenti</label>

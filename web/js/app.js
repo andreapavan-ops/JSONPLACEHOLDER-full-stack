@@ -11,6 +11,7 @@ import * as ui from "./ui.js";
 
 let utenteSelezionato = null;   // { id, nome }
 let postSelezionato = null;     // { id, titolo }
+let utenteInModifica = null;   // utente da modificare, null = modalità creazione
 
 // ============================================================
 // Riferimenti DOM
@@ -86,10 +87,11 @@ navBottoni.commenti.addEventListener("click", async () => {
 async function caricaUtenti() {
     try {
         const utenti = await api.ottieniUtenti();
-        ui.mostraUtenti(utenti, liste.utenti, {
-            onVediPost: vediPostDiUtente,
-            onElimina: eliminaUtente,
-        });
+ui.mostraUtenti(utenti, liste.utenti, {
+    onVediPost: vediPostDiUtente,
+    onModifica: iniziaModificaUtente,
+    onElimina: eliminaUtente,
+});
     } catch (err) {
         ui.mostraErrore(err.message, liste.utenti);
     }
@@ -173,6 +175,35 @@ async function vediCommentiDiPost(post) {
 }
 
 // ============================================================
+// Modifica utente
+// ============================================================
+
+function iniziaModificaUtente(utente) {
+    utenteInModifica = utente;
+
+    // Pre-compila il form con i dati dell'utente
+    document.getElementById("utente-nome").value = utente.nome;
+    document.getElementById("utente-email").value = utente.email;
+    document.getElementById("utente-citta").value = utente.citta || "";
+    document.getElementById("utente-sesso").value = utente.sesso || "";
+    document.getElementById("utente-cf").value = utente.codiceFiscale || "";
+    document.getElementById("utente-dataNascita").value = utente.dataNascita ? utente.dataNascita.slice(0, 10) : "";
+    document.getElementById("utente-telefono").value = utente.telefono || "";
+
+    // Cambia titolo e mostra bottone Annulla
+    document.getElementById("titolo-form-utente").textContent = "Modifica Utente";
+    document.getElementById("annulla-modifica").style.display = "";
+}
+
+function resetFormUtente() {
+    utenteInModifica = null;
+    document.getElementById("form-utente").reset();
+    document.getElementById("titolo-form-utente").textContent = "Nuovo Utente";
+    document.getElementById("annulla-modifica").style.display = "none";
+}
+
+
+// ============================================================
 // Eliminazione
 // ============================================================
 
@@ -241,8 +272,13 @@ document.getElementById("form-utente").addEventListener("submit", async (e) => {
     }
 
     try {
-        await api.creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
-        e.target.reset();
+        if (utenteInModifica) {
+            await api.aggiornaUtente(utenteInModifica.id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
+            resetFormUtente();
+        } else {
+            await api.creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
+            e.target.reset();
+        }
         await caricaUtenti();
         await aggiornaStatistiche();
     } catch (err) {
@@ -266,7 +302,7 @@ document.getElementById("form-post").addEventListener("submit", async (e) => {
         await caricaPost(utenteSelezionato?.id);
         await aggiornaStatistiche();
     } catch (err) {
-        ui.mostraErrore(err.message, liste.post);
+        ui.mostraErrore(err.message, liste.utenti);
     }
 });
 
@@ -313,6 +349,11 @@ document.getElementById("ricerca-utenti").addEventListener("input", (e) => {
         card.style.display = contenuto.includes(testo) ? "" : "none";
     });
 });
+
+document.getElementById("annulla-modifica").addEventListener("click", () => {
+    resetFormUtente();
+});
+
 
 aggiornaStatistiche();
 caricaUtenti();

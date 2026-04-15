@@ -51,9 +51,10 @@ export function mostraUtenti(utenti, contenitore, callbacks) {
             <p>${utente.citta || "Nessuna citta"}</p>
             <p>Sesso: ${utente.sesso || "—"} | CF: ${utente.codiceFiscale || "—"}</p>
             <p>Nato il: ${utente.dataNascita ? utente.dataNascita.slice(0, 10) : "—"} | Tel: ${utente.telefono || "—"}</p>
-            <p>Creato il: ${new Date(utente.creatoIl).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</p>
+            <p>Creato il: ${new Date(utente.creatoIl).toLocaleString("it-IT", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
             <div class="azioni">
                 <button class="btn-primario" data-azione="vedi-post">Vedi Post</button>
+                <button class="btn-secondario" data-azione="modifica">Modifica</button>
                 <button class="btn-pericolo" data-azione="elimina">Elimina</button>
             </div>
         `;
@@ -61,6 +62,11 @@ export function mostraUtenti(utenti, contenitore, callbacks) {
         card.querySelector('[data-azione="vedi-post"]').addEventListener("click", () => {
             callbacks.onVediPost(utente);
         });
+
+        card.querySelector('[data-azione="modifica"]').addEventListener("click", () => {
+            callbacks.onModifica(utente);
+        });
+
 
         card.querySelector('[data-azione="elimina"]').addEventListener("click", () => {
             callbacks.onElimina(utente.id);
@@ -93,7 +99,7 @@ export function mostraPost(post, contenitore, callbacks) {
         card.innerHTML = `
             <h3>${p.titolo}</h3>
             <p>${p.corpo}</p>
-            <p>Creato il: ${new Date(p.creatoIl).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</p>
+            <p>Creato il: ${new Date(p.creatoIl).toLocaleString("it-IT", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
             <div class="azioni">
                 <button class="btn-primario" data-azione="vedi-commenti">Vedi Commenti</button>
                 <button class="btn-pericolo" data-azione="elimina">Elimina</button>
@@ -136,7 +142,7 @@ export function mostraCommenti(commenti, contenitore, callbacks) {
             <h3>${c.nome}</h3>
             <p>${c.email}</p>
             <p>${c.corpo}</p>
-            <p>Creato il: ${new Date(c.creatoIl).toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" })}</p>
+            <p>Creato il: ${new Date(c.creatoIl).toLocaleString("it-IT", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
             <div class="azioni">
                 <button class="btn-pericolo" data-azione="elimina">Elimina</button>
             </div>
