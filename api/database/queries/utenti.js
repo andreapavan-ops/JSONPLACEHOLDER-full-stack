@@ -133,3 +133,17 @@ export async function eliminaUtente(id) {
     return utente;
 }
 
+
+/**
+ * Cerca un utente per email — include la password per il login.
+ * Usato SOLO internamente: non restituire mai questo oggetto al client.
+ *
+ * SQL: SELECT * FROM utenti WHERE email = ?
+ */
+export async function trovaUtentePerEmail(email) {
+    const [righe] = await pool.query(
+        "SELECT id, nome, email, password FROM utenti WHERE email = ?",
+        [email]
+    );
+    return righe[0]; // undefined se non trovato
+}

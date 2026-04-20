@@ -7,6 +7,8 @@ import cors from "cors";
 import routeUtenti from "./routes/utenti.js";
 import routePost from "./routes/post.js";
 import routeCommenti from "./routes/commenti.js";
+import routeAuth from "./routes/auth.js";
+
 
 const app = express();
 const PORT = 3000;
@@ -45,6 +47,7 @@ app.use((req, res, next) => {
 app.use("/api/utenti", routeUtenti);
 app.use("/api/post", routePost);
 app.use("/api/commenti", routeCommenti);
+app.use("/api/auth", routeAuth);
 
 // ============================================================
 // Route di benvenuto (home page)
