@@ -6,6 +6,8 @@
 // Ogni handler è async e usa try/catch per gestire errori del database.
 
 import { Router } from "express";
+import bcrypt from "bcrypt";
+
 import {
     trovaUtenti, trovaUtentePerId, creaUtente,
     sostituisciUtente, aggiornaUtente, eliminaUtente
@@ -69,15 +71,18 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
     try {
-        const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono } = req.body;
+const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password } = req.body;
 
-        if (!nome || !email) {
-            return res.status(400).json({
-                errore: "I campi 'nome' e 'email' sono obbligatori"
-            });
-        }
+if (!nome || !email || !password) {
+    return res.status(400).json({ errore: "I campi 'nome', 'email' e 'password' sono obbligatori" });
+}
+if (password.length < 8) {
+    return res.status(400).json({ errore: "La password deve avere almeno 8 caratteri" });
+}
 
-        const nuovoUtente = await creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
+const hash = await bcrypt.hash(password, 10);
+const nuovoUtente = await creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password: hash });
+
         res.status(201).json(nuovoUtente);
     } catch (errore) {
         console.error("Errore POST /api/utenti:", errore);
@@ -96,15 +101,17 @@ router.post("/", async (req, res) => {
 router.put("/:id", async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono } = req.body;
+        const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password } = req.body;
 
-        if (!nome || !email) {
-            return res.status(400).json({
-                errore: "I campi 'nome' e 'email' sono obbligatori"
-            });
+        if (!nome || !email || !password) {
+            return res.status(400).json({ errore: "I campi 'nome', 'email' e 'password' sono obbligatori" });
+        }
+        if (password.length < 8) {
+            return res.status(400).json({ errore: "La password deve avere almeno 8 caratteri" });
         }
 
-        const aggiornato = await sostituisciUtente(id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
+        const hash = await bcrypt.hash(password, 10);
+        const aggiornato = await sostituisciUtente(id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password: hash });
 
         if (!aggiornato) {
             return res.status(404).json({
@@ -130,9 +137,17 @@ router.put("/:id", async (req, res) => {
 router.patch("/:id", async (req, res) => {
     try {
         const id = parseInt(req.params.id);
-        const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono } = req.body;
+        const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password } = req.body;
 
-        const utente = await aggiornaUtente(id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
+        let hash;
+        if (password !== undefined) {
+            if (password.length < 8) {
+                return res.status(400).json({ errore: "La password deve avere almeno 8 caratteri" });
+            }
+            hash = await bcrypt.hash(password, 10);
+        }
+
+        const utente = await aggiornaUtente(id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, ...(hash && { password: hash }) });
 
         if (!utente) {
             return res.status(404).json({

@@ -271,6 +271,9 @@ document.getElementById("form-utente").addEventListener("submit", async (e) => {
     const codiceFiscale = document.getElementById("utente-cf").value.trim();
     const dataNascita = document.getElementById("utente-dataNascita").value;
     const telefono = document.getElementById("utente-telefono").value.trim();
+    const password = document.getElementById("utente-password").value;
+
+
 
     // ============================================================
     // Validazione Codice Fiscale
@@ -288,13 +291,12 @@ document.getElementById("form-utente").addEventListener("submit", async (e) => {
         ui.mostraErrore("Codice fiscale non valido (formato: RSSMRA80A01H501A)", liste.utenti);
         return;
     }
-
     try {
         if (utenteInModifica) {
-            await api.aggiornaUtente(utenteInModifica.id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
+            await api.aggiornaUtente(utenteInModifica.id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password });
             resetFormUtente();
         } else {
-            await api.creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono });
+            await api.creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password });
             e.target.reset();
         }
         await caricaUtenti();
