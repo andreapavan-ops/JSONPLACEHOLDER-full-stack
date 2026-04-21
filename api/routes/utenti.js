@@ -12,6 +12,7 @@ import {
     trovaUtenti, trovaUtentePerId, creaUtente,
     sostituisciUtente, aggiornaUtente, eliminaUtente
 } from "../database/queries/utenti.js";
+import { richiediAutenticazione } from "../middleware/autenticazione.js";
 
 const router = Router();
 
@@ -98,7 +99,7 @@ const nuovoUtente = await creaUtente({ nome, email, citta, sesso, codiceFiscale,
 // Prima (array):    utenti[indice] = { id, nome, email, citta }
 // Adesso (MySQL):   UPDATE utenti SET nome=?, email=?, citta=? WHERE id=?
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", richiediAutenticazione, async (req, res) => {
     try {
         const id = parseInt(req.params.id);
         const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password } = req.body;
@@ -134,7 +135,7 @@ router.put("/:id", async (req, res) => {
 // Prima (array):    if (nome !== undefined) utente.nome = nome;
 // Adesso (MySQL):   UPDATE utenti SET <campo>=? WHERE id=? (query dinamica)
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", richiediAutenticazione, async (req, res) => {
     try {
         const id = parseInt(req.params.id);
         const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password } = req.body;
@@ -172,7 +173,7 @@ router.patch("/:id", async (req, res) => {
 // Nota: grazie a ON DELETE CASCADE, eliminando un utente
 // vengono eliminati automaticamente anche i suoi post e commenti.
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", richiediAutenticazione, async (req, res) => {
     try {
         const id = parseInt(req.params.id);
         const rimosso = await eliminaUtente(id);
