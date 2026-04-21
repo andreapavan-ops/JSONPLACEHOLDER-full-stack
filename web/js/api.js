@@ -10,18 +10,27 @@ const BASE_URL = "http://localhost:3000/api";
 // ============================================================
 
 async function chiamataApi(percorso, opzioni = {}) {
-    const risposta = await fetch(`${BASE_URL}${percorso}`, {
-        headers: { "Content-Type": "application/json" },
-        ...opzioni,
+    const token = localStorage.getItem("token");
+    const headers = {
+        "Content-Type": "application/json",
+        ...opzioni.headers,
+    };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    const risposta = await fetch(`${BASE_URL}${percorso}`, { ...opzioni, headers });
+    if (!risposta.ok) throw new Error((await risposta.json()).errore);
+    return risposta.json();
+}
+
+// ============================================================
+// Auth
+// ============================================================
+
+export async function login(email, password) {
+    return chiamataApi("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
     });
-
-    const dati = await risposta.json();
-
-    if (!risposta.ok) {
-        throw new Error(dati.errore || "Errore sconosciuto");
-    }
-
-    return dati;
 }
 
 // ============================================================
@@ -45,7 +54,7 @@ export async function eliminaUtente(id) {
 
 export async function aggiornaUtente(id, dati) {
     return chiamataApi(`/utenti/${id}`, {
-        method: "PUT",
+        method: "PATCH",
         body: JSON.stringify(dati),
     });
 }

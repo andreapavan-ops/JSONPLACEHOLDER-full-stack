@@ -208,6 +208,9 @@ function iniziaModificaUtente(utente) {
     document.getElementById("utente-dataNascita").value = utente.dataNascita ? utente.dataNascita.slice(0, 10) : "";
     document.getElementById("utente-telefono").value = utente.telefono || "";
 
+    // Password opzionale in modifica (non si può pre-compilare per sicurezza)
+    document.getElementById("utente-password").required = false;
+
     // Cambia titolo e mostra bottone Annulla
     document.getElementById("titolo-form-utente").textContent = "Modifica Utente";
     document.getElementById("annulla-modifica").style.display = "";
@@ -216,6 +219,7 @@ function iniziaModificaUtente(utente) {
 function resetFormUtente() {
     utenteInModifica = null;
     document.getElementById("form-utente").reset();
+    document.getElementById("utente-password").required = true;
     document.getElementById("titolo-form-utente").textContent = "Nuovo Utente";
     document.getElementById("annulla-modifica").style.display = "none";
 }
@@ -293,7 +297,9 @@ document.getElementById("form-utente").addEventListener("submit", async (e) => {
     }
     try {
         if (utenteInModifica) {
-            await api.aggiornaUtente(utenteInModifica.id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password });
+            const dati = { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono };
+            if (password) dati.password = password;
+            await api.aggiornaUtente(utenteInModifica.id, dati);
             resetFormUtente();
         } else {
             await api.creaUtente({ nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password });
@@ -382,6 +388,65 @@ document.getElementById("btn-successiva").addEventListener("click", () => {
     caricaPost(undefined, paginaCorrente + 1);
 });
 
+// ============================================================
+// Autenticazione — login / logout
+// ============================================================
 
-aggiornaStatistiche();
-caricaUtenti();
+function aggiornaStatoLogin() {
+    const utente = JSON.parse(localStorage.getItem("utente") || "null");
+    document.getElementById("stato-login").textContent = utente
+        ? `Loggato come ${utente.nome}`
+        : "Non sei autenticato";
+}
+
+function mostraApp() {
+    document.getElementById("sezione-login").classList.add("nascosta");
+    aggiornaStatoLogin();
+}
+
+function mostraLogin() {
+    document.getElementById("sezione-login").classList.remove("nascosta");
+    for (const sezione of Object.values(sezioni)) {
+        sezione.classList.add("nascosta");
+    }
+}
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("utente");
+    document.getElementById("form-login").reset();
+    aggiornaStatoLogin();
+    mostraLogin();
+}
+
+document.getElementById("form-login").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    try {
+        const { token, utente } = await api.login(email, password);
+        localStorage.setItem("token", token);
+        localStorage.setItem("utente", JSON.stringify(utente));
+        mostraApp();
+        mostraSezione("utenti");
+        await caricaUtenti();
+        await aggiornaStatistiche();
+    } catch (errore) {
+        document.getElementById("stato-login").textContent = `Errore: ${errore.message}`;
+    }
+});
+
+document.getElementById("nav-log").addEventListener("click", logout);
+
+// ============================================================
+// Avvio — controlla se già autenticato
+// ============================================================
+
+if (localStorage.getItem("token")) {
+    mostraApp();
+    mostraSezione("utenti");
+    aggiornaStatistiche();
+    caricaUtenti();
+} else {
+    mostraLogin();
+}

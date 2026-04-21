@@ -283,6 +283,22 @@ form button[type="submit"]:hover {
 }
 
 /* ============================================================
+   Sezione Login
+   ============================================================ */
+
+#sezione-login {
+    max-width: 400px;
+    margin: 2rem auto;
+}
+
+#stato-login {
+    font-size: 0.875rem;
+    color: var(--colore-testo-chiaro);
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+/* ============================================================
    Campo ricerca
    ============================================================ */
 
