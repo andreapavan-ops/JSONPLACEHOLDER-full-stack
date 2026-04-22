@@ -34,7 +34,7 @@ function mostraVuoto(contenitore, testo) {
  * @param {HTMLElement} contenitore
  * @param {{ onVediPost: Function, onElimina: Function }} callbacks
  */
-export function mostraUtenti(utenti, contenitore, callbacks) {
+export function mostraUtenti(utenti, contenitore, callbacks, utenteLoggato) {
     pulisciContenitore(contenitore);
 
     if (utenti.length === 0) {
@@ -55,7 +55,7 @@ export function mostraUtenti(utenti, contenitore, callbacks) {
             <div class="azioni">
                 <button class="btn-primario" data-azione="vedi-post">Vedi Post</button>
                 <button class="btn-secondario" data-azione="modifica">Modifica</button>
-                <button class="btn-pericolo" data-azione="elimina">Elimina</button>
+                ${utenteLoggato?.ruolo === "admin" ? '<button class="btn-pericolo" data-azione="elimina">Elimina</button>' : ""}
             </div>
         `;
 
@@ -68,9 +68,8 @@ export function mostraUtenti(utenti, contenitore, callbacks) {
         });
 
 
-        card.querySelector('[data-azione="elimina"]').addEventListener("click", () => {
-            callbacks.onElimina(utente.id);
-        });
+const btnElimina = card.querySelector('[data-azione="elimina"]');
+if (btnElimina) btnElimina.addEventListener("click", () => callbacks.onElimina(utente.id));
 
         contenitore.appendChild(card);
     });
@@ -85,7 +84,7 @@ export function mostraUtenti(utenti, contenitore, callbacks) {
  * @param {HTMLElement} contenitore
  * @param {{ onVediCommenti: Function, onElimina: Function }} callbacks
  */
-export function mostraPost(post, contenitore, callbacks) {
+    export function mostraPost(post, contenitore, callbacks, utenteLoggato) {
     pulisciContenitore(contenitore);
 
     if (post.length === 0) {
@@ -94,6 +93,7 @@ export function mostraPost(post, contenitore, callbacks) {
     }
 
     post.forEach(p => {
+        const puoEliminare = p.userId === utenteLoggato?.id || utenteLoggato?.ruolo === "admin";
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `

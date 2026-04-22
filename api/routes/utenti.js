@@ -12,7 +12,7 @@ import {
     trovaUtenti, trovaUtentePerId, creaUtente,
     sostituisciUtente, aggiornaUtente, eliminaUtente
 } from "../database/queries/utenti.js";
-import { richiediAutenticazione } from "../middleware/autenticazione.js";
+import { richiediAutenticazione, richiediRuolo } from "../middleware/autenticazione.js";
 
 const router = Router();
 
@@ -99,7 +99,13 @@ const nuovoUtente = await creaUtente({ nome, email, citta, sesso, codiceFiscale,
 // Prima (array):    utenti[indice] = { id, nome, email, citta }
 // Adesso (MySQL):   UPDATE utenti SET nome=?, email=?, citta=? WHERE id=?
 
-router.put("/:id", richiediAutenticazione, async (req, res) => {
+router.put("/:id", richiediAutenticazione, (req, res, next) => {
+    if (req.utente.id !== parseInt(req.params.id) && req.utente.ruolo !== "admin") {
+        return res.status(403).json({ errore: "Puoi modificare solo il tuo profilo" });
+    }
+    next();
+}, async (req, res) => {
+
     try {
         const id = parseInt(req.params.id);
         const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password } = req.body;
@@ -135,7 +141,13 @@ router.put("/:id", richiediAutenticazione, async (req, res) => {
 // Prima (array):    if (nome !== undefined) utente.nome = nome;
 // Adesso (MySQL):   UPDATE utenti SET <campo>=? WHERE id=? (query dinamica)
 
-router.patch("/:id", richiediAutenticazione, async (req, res) => {
+router.patch("/:id", richiediAutenticazione, (req, res, next) => {
+    if (req.utente.id !== parseInt(req.params.id) && req.utente.ruolo !== "admin") {
+        return res.status(403).json({ errore: "Puoi modificare solo il tuo profilo" });
+    }
+    next();
+}, async (req, res) => {
+
     try {
         const id = parseInt(req.params.id);
         const { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password } = req.body;
@@ -149,6 +161,8 @@ router.patch("/:id", richiediAutenticazione, async (req, res) => {
         }
 
         const utente = await aggiornaUtente(id, { nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, ...(hash && { password: hash }) });
+
+
 
         if (!utente) {
             return res.status(404).json({
@@ -173,7 +187,7 @@ router.patch("/:id", richiediAutenticazione, async (req, res) => {
 // Nota: grazie a ON DELETE CASCADE, eliminando un utente
 // vengono eliminati automaticamente anche i suoi post e commenti.
 
-router.delete("/:id", richiediAutenticazione, async (req, res) => {
+router.delete("/:id", richiediAutenticazione, richiediRuolo("admin"), async (req, res) => {
     try {
         const id = parseInt(req.params.id);
         const rimosso = await eliminaUtente(id);

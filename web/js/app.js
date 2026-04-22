@@ -16,6 +16,16 @@ let paginaCorrente = 1;
 const limitePost = 3;
 
 // ============================================================
+// Utente loggato
+// ============================================================
+
+function getUtenteLoggato() {
+    const raw = localStorage.getItem("utente");
+    return raw ? JSON.parse(raw) : null;
+}
+
+
+// ============================================================
 // Riferimenti DOM
 // ============================================================
 

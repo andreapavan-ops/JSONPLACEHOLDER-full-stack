@@ -3,12 +3,12 @@
 -- Inserisce gli stessi dati che avevamo nel vecchio database.js.
 -- Viene eseguito automaticamente da Docker al primo avvio.
 
-INSERT INTO utenti (id, nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password) VALUES
-    (1, 'Mario Rossi',   'mario@email.com',  'Roma',    'M',     'RSSMRA80A01H501A', '1980-01-01', '+39 333 1234567', '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre'),
-    (2, 'Luigi Verdi',   'luigi@email.com',  'Milano',  'M',     'VRDLGU75B12F205Z', '1975-02-12', NULL,              '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre'),
-    (3, 'Peach Bianchi', 'peach@email.com',  'Napoli',  'F',     'BNCPCH90C43F839X', '1990-03-25', '+39 347 9876543', '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre'),
-    (4, 'Toad Gialli',   'toad@email.com',   'Torino',  'Altro', 'GLLTDO85D44L219W', NULL,         NULL,              '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre'),
-    (5, 'Bowser Neri',   'bowser@email.com', 'Firenze', 'M',     'NREBWS70E01D612V', '1970-05-01', '+39 320 5554433', '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre');
+INSERT INTO utenti (id, nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, password, ruolo) VALUES
+    (1, 'Mario Rossi',   'mario@email.com',  'Roma',    'M',     'RSSMRA80A01H501A', '1980-01-01', '+39 333 1234567', '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre', 'admin'),
+    (2, 'Luigi Verdi',   'luigi@email.com',  'Milano',  'M',     'VRDLGU75B12F205Z', '1975-02-12', NULL,              '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre', 'utente'),
+    (3, 'Peach Bianchi', 'peach@email.com',  'Napoli',  'F',     'BNCPCH90C43F839X', '1990-03-25', '+39 347 9876543', '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre', 'utente'),
+    (4, 'Toad Gialli',   'toad@email.com',   'Torino',  'Altro', 'GLLTDO85D44L219W', NULL,         NULL,              '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre', 'utente'),
+    (5, 'Bowser Neri',   'bowser@email.com', 'Firenze', 'M',     'NREBWS70E01D612V', '1970-05-01', '+39 320 5554433', '$2b$10$CGgL1tObhNxSCxshpjPHYuk22mwvyKESHVFynQBUaHi1dwqQvMhre', 'utente');
 
 INSERT INTO post (id, userId, titolo, corpo) VALUES
     (1, 1, 'Il mio primo post',          'Ciao a tutti! Questo è il mio primo post sulla piattaforma.'),

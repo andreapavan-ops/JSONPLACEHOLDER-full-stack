@@ -90,6 +90,15 @@ router.put("/:id", richiediAutenticazione, async (req, res) => {
         const id = parseInt(req.params.id);
         const { userId, titolo, corpo } = req.body;
 
+        const post = await trovaPostPerId(id);
+        if (!post) return res.status(404).json({ errore: "Post non trovato" });
+
+        const isAutore = post.userId === req.utente.id;
+        const isAdmin = req.utente.ruolo === "admin";
+        if (!isAutore && !isAdmin) {
+            return res.status(403).json({ errore: "Puoi modificare solo i tuoi post" });
+        }
+
         if (!userId || !titolo || !corpo) {
             return res.status(400).json({
                 errore: "I campi 'userId', 'titolo' e 'corpo' sono obbligatori"
@@ -120,6 +129,15 @@ router.patch("/:id", richiediAutenticazione, async (req, res) => {
         const id = parseInt(req.params.id);
         const { userId, titolo, corpo } = req.body;
 
+        const post = await trovaPostPerId(id);
+        if (!post) return res.status(404).json({ errore: "Post non trovato" });
+
+        const isAutore = post.userId === req.utente.id;
+        const isAdmin = req.utente.ruolo === "admin";
+        if (!isAutore && !isAdmin) {
+            return res.status(403).json({ errore: "Puoi modificare solo i tuoi post" });
+        }
+
         const elemento = await aggiornaPost(id, { userId, titolo, corpo });
 
         if (!elemento) {
@@ -143,16 +161,17 @@ router.patch("/:id", richiediAutenticazione, async (req, res) => {
 
 router.delete("/:id", richiediAutenticazione, async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
-        const rimosso = await eliminaPost(id);
+        const post = await trovaPostPerId(req.params.id);
+        if (!post) return res.status(404).json({ errore: "Post non trovato" });
 
-        if (!rimosso) {
-            return res.status(404).json({
-                errore: `Post con id ${id} non trovato`
-            });
+        const isAutore = post.userId === req.utente.id;
+        const isAdmin = req.utente.ruolo === "admin";
+        if (!isAutore && !isAdmin) {
+            return res.status(403).json({ errore: "Puoi modificare solo i tuoi post" });
         }
 
-        res.json({ messaggio: "Post eliminato", post: rimosso });
+        await eliminaPost(req.params.id);
+        res.json({ messaggio: "Post eliminato", post });
     } catch (errore) {
         console.error("Errore DELETE /api/post/:id:", errore);
         res.status(500).json({ errore: "Errore interno del server" });

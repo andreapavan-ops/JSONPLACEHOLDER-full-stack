@@ -24,13 +24,13 @@ import pool from "../connessione.js";
 export async function trovaUtenti(citta) {
     if (citta) {
         const [righe] = await pool.query(
-            "SELECT id, nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, creatoIl FROM utenti WHERE LOWER(citta) = LOWER(?)",
+            "SELECT id, nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, ruolo, creatoIl FROM utenti WHERE LOWER(citta) = LOWER(?)",
             [citta]
         );
         return righe;
     }
 
-    const [righe] = await pool.query("SELECT id, nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, creatoIl FROM utenti");
+    const [righe] = await pool.query("SELECT id, nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, ruolo, creatoIl FROM utenti");
     return righe;
 }
 
@@ -42,7 +42,7 @@ export async function trovaUtenti(citta) {
  */
 export async function trovaUtentePerId(id) {
     const [righe] = await pool.query(
-        "SELECT id, nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, creatoIl FROM utenti WHERE id = ?",
+        "SELECT id, nome, email, citta, sesso, codiceFiscale, dataNascita, telefono, ruolo, creatoIl FROM utenti WHERE id = ?",
         [id]
     );
     return righe[0]; // undefined se non trovato
@@ -93,7 +93,7 @@ export async function sostituisciUtente(id, { nome, email, citta, sesso, codiceF
  * SQL dinamico: UPDATE utenti SET <campo> = ?, ... WHERE id = ?
  */
 export async function aggiornaUtente(id, dati) {
-const campiPermessi = ["nome", "email", "citta", "sesso", "codiceFiscale", "dataNascita", "telefono", "password"];
+const campiPermessi = ["nome", "email", "citta", "sesso", "codiceFiscale", "dataNascita", "telefono", "password", "ruolo"];
     const aggiornamenti = [];
     const valori = [];
 
@@ -142,7 +142,7 @@ export async function eliminaUtente(id) {
  */
 export async function trovaUtentePerEmail(email) {
     const [righe] = await pool.query(
-        "SELECT id, nome, email, password FROM utenti WHERE email = ?",
+        "SELECT id, nome, email, password, ruolo FROM utenti WHERE email = ?",
         [email]
     );
     return righe[0]; // undefined se non trovato

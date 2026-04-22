@@ -37,7 +37,7 @@ router.post("/registrazione", async (req, res) => {
 
         // Genera il token JWT — firmato con la chiave segreta, scade in 7 giorni
         const token = jwt.sign(
-            { id: utente.id, email, nome },
+            { id: utente.id, email, nome, ruolo: utente.ruolo },
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         );
@@ -74,7 +74,7 @@ router.post("/login", async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: utente.id, email: utente.email, nome: utente.nome },
+            { id: utente.id, email: utente.email, nome: utente.nome, ruolo: utente.ruolo },
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         );
